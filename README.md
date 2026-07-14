@@ -91,13 +91,36 @@ similarity = pickle.load(
 ### Recommendation Function
 def recommend(movie):
     index = movies[movies['title']==movie].index[0]
-
     distances = sorted(
         list(enumerate(similarity[index])),
         reverse=True,
         key=lambda x:x[1]
     )
-
     return distances[1:6]
 
-Fetch Poster
+### Fetch Poster
+def fetch_poster(movie_id):
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=API_KEY"
+    data = requests.get(url).json()
+    return (
+        "https://image.tmdb.org/t/p/w500/"
+        + data["poster_path"]
+    )
+
+### Streamlit UI
+selected_movie = st.selectbox(
+    "Select Movie",
+    movie_list
+)
+
+if st.button("Show Recommendation"):
+    recommend(selected_movie)
+
+# Screenshots
+images/home.png
+images/result.png
+# Dataset 
+TMDB 5000 Movies Dataset
+Files used:
+tmdb_5000_movies.csv
+tmdb_5000_credits.csv
