@@ -18,19 +18,24 @@ A Content-Based Movie Recommendation System built using Python, Pandas, Scikit-l
 - 🧩 Modular architecture separating model building and deployment
 
 # Tech Stack
-Python
-Pandas
-NumPy
-Scikit-learn
-NLTK
-Streamlit
-Pickle
-TMDB API
-Requests
+-Python
+-Pandas
+-NumPy
+-Scikit-learn
+-NLTK
+-Streamlit
+-Pickle
+-TMDB API
+-Requests
 
 # Project Architecture / Workflow
 ## Data Loading
 movies = pd.read_csv("tmdb_5000_movies.csv")
 credits = pd.read_csv("tmdb_5000_credits.csv")
-
 movies = movies.merge(credits, on="title")
+
+##Feature Engineering
+movies = movies[
+    ['movie_id','title','overview','genres',
+     'keywords','cast','crew']
+]
