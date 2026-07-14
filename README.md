@@ -58,3 +58,46 @@ cv = CountVectorizer(
 vectors = cv.fit_transform(
     movies['tags']
 ).toarray()
+
+### Cosine Similarity
+similarity = cosine_similarity(vectors)
+
+### Saving model
+pickle.dump(movies,
+            open('movie_list.pkl','wb'))
+
+pickle.dump(similarity,
+            open('similarity.pkl','wb'))
+### Installation
+git clone https://github.com/username/movie-recommendation-system.git
+
+cd movie-recommendation-system
+
+pip install -r requirements.txt
+
+### How to run
+streamlit run app.py
+
+# Deployment (Streamlit)
+### Loading the model
+movies = pickle.load(
+    open('model/movie_list.pkl','rb')
+)
+
+similarity = pickle.load(
+    open('model/similarity.pkl','rb')
+)
+
+### Recommendation Function
+def recommend(movie):
+    index = movies[movies['title']==movie].index[0]
+
+    distances = sorted(
+        list(enumerate(similarity[index])),
+        reverse=True,
+        key=lambda x:x[1]
+    )
+
+    return distances[1:6]
+
+Fetch Poster
