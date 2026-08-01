@@ -1,126 +1,98 @@
-# movie-recommender-system-tmdb-dataset
-A content based movie recommender system using cosine similarity
-# 🎬 Movie Recommendation System
+# Movie Recommender System 🎬
 
-A Content-Based Movie Recommendation System built using Python, Pandas, Scikit-learn, Streamlit, and TMDB API. The system recommends movies similar to the selected movie by analyzing their metadata such as genres, keywords, cast, crew, and overview using Natural Language Processing (NLP) techniques.
+A content-based movie recommendation system built using Python, Scikit-learn, and Streamlit. The application suggests top 5 similar movies along with their posters based on metadata analysis (overview, genres, keywords, cast, and crew) from the TMDB 5000 dataset.
 
-# ✨ Features
+---
 
-- 🎬 Top-5 content-based movie recommendations
-- 🧠 NLP-based feature engineering using movie metadata
-- 📊 5,000-dimensional Bag-of-Words representation
-- 📐 Cosine Similarity for recommendation ranking
-- ⚡ Fast recommendations using precomputed Pickle models
-- 🖼️ Real-time movie posters fetched via TMDB API
-- 🎨 Interactive Streamlit web interface
-- 📚 Supports 4,800+ movies from the TMDB dataset
-- 🔄 Automatic ranking of the most similar movies
-- 🧩 Modular architecture separating model building and deployment
+## 📌 Project Overview
+This project processes movie metadata to extract tags for each movie, converts textual data into numerical vectors using `CountVectorizer`, and calculates similarity scores using **Cosine Similarity**. A user-friendly web interface built with **Streamlit** lets users select a movie and instantly receive recommendations along with official poster images fetched from **The Movie Database (TMDB) API**.
 
-# Tech Stack
--Python
--Pandas
--NumPy
--Scikit-learn
--NLTK
--Streamlit
--Pickle
--TMDB API
--Requests
+---
 
-# Project Architecture / Workflow
-### Data Loading
-movies = pd.read_csv("tmdb_5000_movies.csv")
-credits = pd.read_csv("tmdb_5000_credits.csv")
-movies = movies.merge(credits, on="title")
+## 🛠️ Features
+- **Content-Based Filtering**: Recommends movies based on structural similarity of overview, genres, keywords, top cast, and director.
+- **TMDB API Integration**: Dynamically fetches and displays high-quality movie posters.
+- **Interactive UI**: Built using Streamlit for seamless user experience.
 
-### Feature Engineering
-movies = movies[
-    ['movie_id','title','overview','genres',
-     'keywords','cast','crew']
-]
+---
 
-### Combining Features
-movies["tags"] = (
-    movies["overview"] +
-    movies["genres"] +
-    movies["keywords"] +
-    movies["cast"] +
-    movies["crew"]
-)
+## 📂 Project Structure
+```text
+.
+├── model/
+│   ├── movie_list.pkl        # Pickle file containing processed movie DataFrame
+│   └── similarity.pkl        # Pickle file containing Cosine Similarity matrix
+├── app.py                    # Streamlit web application script
+├── model_building.ipynb      # Jupyter Notebook for EDA, data cleaning, & modeling
+├── README.md                 # Project documentation
+└── requirements.txt          # Python dependencies
+```
 
-### Vectorizatoin
-cv = CountVectorizer(
-    max_features=5000,
-    stop_words='english'
-)
+---
 
-vectors = cv.fit_transform(
-    movies['tags']
-).toarray()
+## ⚙️ How It Works
 
-### Cosine Similarity
-similarity = cosine_similarity(vectors)
+1. **Data Preprocessing**:
+   - Merges `tmdb_5000_movies.csv` and `tmdb_5000_credits.csv` on movie title.
+   - Extracts relevant attributes: `movie_id`, `title`, `overview`, `genres`, `keywords`, `cast`, and `crew`.
+   - Normalizes data by removing spaces (e.g., "Sam Worthington" -> "SamWorthington").
+   - Concatenates attributes into a single string column named `tags`.
 
-### Saving model
-pickle.dump(movies,
-            open('movie_list.pkl','wb'))
+2. **Vectorization & Similarity**:
+   - Uses `CountVectorizer(max_features=5000, stop_words='english')` to convert text tags into feature vectors.
+   - Applies **Cosine Similarity** (`cosine_similarity(vector)`) to create a similarity matrix across all movies.
 
-pickle.dump(similarity,
-            open('similarity.pkl','wb'))
-### Installation
-git clone https://github.com/username/movie-recommendation-system.git
+3. **Web Application**:
+   - Loads serialized `movie_list.pkl` and `similarity.pkl`.
+   - Fetches poster images using TMDB API endpoint `https://api.themoviedb.org/3/movie/{movie_id}`.
+   - Displays recommendations in a responsive 5-column layout.
 
-cd movie-recommendation-system
+---
 
+## 🚀 Installation & Setup
+
+### 1. Prerequisites
+Ensure you have Python 3.7+ installed on your system.
+
+### 2. Clone the Repository
+```bash
+git clone https://github.com/your-username/movie-recommender-system.git
+cd movie-recommender-system
+```
+
+### 3. Install Dependencies
+```bash
 pip install -r requirements.txt
+```
 
-### How to run
+*Required libraries:*
+- `pandas`
+- `numpy`
+- `scikit-learn`
+- `streamlit`
+- `requests`
+
+### 4. Run the Model Notebook (Optional)
+If you want to train or regenerate the pickle files:
+- Run `model_building.ipynb` using Jupyter Notebook or Kaggle.
+- Place the generated `movie_list.pkl` and `similarity.pkl` inside a `model/` folder.
+
+### 5. Run the Streamlit App
+```bash
 streamlit run app.py
+```
 
-# Deployment (Streamlit)
-### Loading the model
-movies = pickle.load(
-    open('model/movie_list.pkl','rb')
-)
+---
 
-similarity = pickle.load(
-    open('model/similarity.pkl','rb')
-)
+## 📸 Usage
+1. Open the application in your browser (usually at `http://localhost:8501`).
+2. Select or search for a movie from the dropdown menu.
+3. Click on the **Show Recommendation** button.
+4. View top 5 recommended movies with poster previews!
 
-### Recommendation Function
-def recommend(movie):
-    index = movies[movies['title']==movie].index[0]
-    distances = sorted(
-        list(enumerate(similarity[index])),
-        reverse=True,
-        key=lambda x:x[1]
-    )
-    return distances[1:6]
+---
 
-### Fetch Poster
-def fetch_poster(movie_id):
-    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=API_KEY"
-    data = requests.get(url).json()
-    return (
-        "https://image.tmdb.org/t/p/w500/"
-        + data["poster_path"]
-    )
-
-### Streamlit UI
-selected_movie = st.selectbox(
-    "Select Movie",
-    movie_list
-)
-
-if st.button("Show Recommendation"):
-    recommend(selected_movie)
-
-# Screenshots
-images/home.png
-images/result.png
-# Dataset 
-TMDB 5000 Movies Dataset
-Files used:
-tmdb_5000_movies.csv
-tmdb_5000_credits.csv
+## 📊 Dataset
+- Dataset Source: [TMDB 5000 Movie Dataset on Kaggle](https://www.kaggle.com/datasets/tmdb/tmdb-movie-metadata)
+  - `tmdb_5000_movies.csv`
+  - `tmdb_5000_credits.csv`
