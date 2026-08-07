@@ -1,0 +1,50 @@
+.stApp {
+    background-color: #141414;
+    color: #FFFFFF;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+h1, h2, h3 {
+    color: #E50914 !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.5px;
+}
+
+div.stButton > button {
+    background-color: #E50914 !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    border-radius: 4px !important;
+    font-weight: bold !important;
+    padding: 0.6rem 1.2rem !important;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+div.stButton > button:hover {
+    background-color: #B9090B !important;
+    transform: scale(1.03);
+}
+
+div[data-baseweb="select"] > div {
+    background-color: #2B2B2B !important;
+    border: 1px solid #333333 !important;
+    color: white !important;
+    border-radius: 4px !important;
+}
+
+/* Movie Poster Image Border Radius & Hover Effect */
+[data-testid="stImage"] img {
+    border-radius: 8px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-testid="stImage"] img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+}
+
+/* Text Labels below Postings */
+[data-testid="stText"] {
+    color: #E5E5E5;
+    font-weight: 600;
+}
